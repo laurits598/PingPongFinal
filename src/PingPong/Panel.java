@@ -21,8 +21,6 @@ public class Panel extends JPanel implements Runnable {
 	static final int BALL_DIAMETER = 20;
 	static final int PADDLE_WIDTH = 25;
 	static final int PADDLE_HEIGHT = 100;
-	static final int MY_PADDLE_HEIGHT = 250;
-
 
 	Thread gameThread;
 	Image image;
@@ -77,8 +75,7 @@ public class Panel extends JPanel implements Runnable {
 	}
 
 	public void newPaddles() {
-//		paddle1 = new Paddle(0,(GAME_HEIGHT/2)-(PADDLE_HEIGHT/2),PADDLE_WIDTH,PADDLE_HEIGHT,1);
-		paddle1 = new Paddle(0,(GAME_HEIGHT/2)-(MY_PADDLE_HEIGHT/2),PADDLE_WIDTH,MY_PADDLE_HEIGHT,1);
+		paddle1 = new Paddle(0,(GAME_HEIGHT/2)-(PADDLE_HEIGHT/2),PADDLE_WIDTH,PADDLE_HEIGHT,1);
 		paddle2 = new Paddle(GAME_WIDTH-PADDLE_WIDTH,(GAME_HEIGHT/2)-(PADDLE_HEIGHT/2),PADDLE_WIDTH,PADDLE_HEIGHT,2);
 	}
 
