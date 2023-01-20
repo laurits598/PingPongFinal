@@ -10,6 +10,7 @@ import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
 
+import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
 
@@ -52,6 +53,9 @@ public class Panel extends JPanel implements Runnable {
 		this.setFocusable(true);
 		this.addKeyListener(new AL());
 		this.setPreferredSize(SCREEN_SIZE);
+		
+		System.out.println("Panel player="+player.getName()+" uri="+ballMovemet.getUri());
+		
 		gameThread = new Thread(this);
 		gameThread.start();
 		OpponentMoved opponentMoved = new OpponentMoved();
@@ -198,10 +202,17 @@ Toolkit.getDefaultToolkit().sync(); // Improve animation
 			try {
 				if(!gameStarted) {
 					if(isPlayerOne) {
-						player.joinAvailable.get(new FormalField(Boolean.class));
+						System.out.println("PlayerOneWaiting with host ID="+player.hostID);
+						player.joinAvailable.get(new ActualField(player.hostID),new FormalField(Boolean.class));
 						gameStarted = true;
+						//Cleanup
+						player.joinAvailable.getAll(new FormalField(Integer.class),new FormalField(Boolean.class));
+						player.joinAvailable.getAll(new FormalField(String.class));
+						player.hostAvailable.getAll(new FormalField(Integer.class),new FormalField(Boolean.class));
+						player.hostAvailable.getAll(new FormalField(String.class));
 					}else {
-						player.joinAvailable.put(true);
+						System.out.println("player 2 put host ID="+player.hostID);
+						player.joinAvailable.put(player.hostID,true);
 						gameStarted = true;
 					}
 				}

@@ -49,6 +49,7 @@ public static void init() {
             	JoinFrame joinFrame = new JoinFrame();
             	joinFrame.open();
             	//System.out.println("Hey");
+            	window.setVisible(false);
             }
         });
         

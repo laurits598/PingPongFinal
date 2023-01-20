@@ -3,6 +3,7 @@ package Lobby;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import org.jspace.ActualField;
 import org.jspace.FormalField;
 
 import PingPong.Player;
@@ -17,7 +18,7 @@ public class LobbyFrame extends javax.swing.JFrame {
 	public Player p2;
 	public String nameOpponment;
 	public boolean isHost;
-	public boolean isReady;
+	public boolean isReady = false;
 	
 	public LobbyFrame(Player p2, String nameOpponment) {
     	this.p2 = p2;
@@ -79,7 +80,11 @@ public class LobbyFrame extends javax.swing.JFrame {
         	jTextField2.setText(p2.getName());
         }
         
-        
+        if(isHost) {
+        	this.setTitle(p1.getName());
+        }else {
+        	this.setTitle(p2.getName());
+        }
 
         jLabel1.setText("Player 1:");
         
@@ -97,9 +102,22 @@ public class LobbyFrame extends javax.swing.JFrame {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					if(isHost) {
-						isReady = true;
+						if(!isReady) {
+							isReady = true;
+						}else {
+							isReady = false;
+						}
 					}else {
-						p2.joinAvailable.put(true);
+						if(!isReady) {
+							isReady = true;
+							System.out.println(p2.getName()+" isReady with HostID="+p2.getHostID());
+							p2.joinAvailable.put(p2.getHostID(),true);
+						}else {
+							isReady = false;
+							System.out.println(p2.getName()+" !isReady with HostID="+p2.getHostID());
+							p2.joinAvailable.get(new ActualField(p2.getHostID()),new FormalField(Boolean.class));
+						}
+						
 					}
 				} catch (InterruptedException e1) {
 					// TODO Auto-generated catch block
@@ -245,13 +263,21 @@ public class LobbyFrame extends javax.swing.JFrame {
 		public void run() {
 			while(true) {
 				try {
-					Object[] t = p1.joinAvailable.get(new FormalField(Boolean.class));
-					if((boolean)t[0] && isReady) {
+					System.out.println(p1.getName()+" waiting for hostID="+p1.hostID);
+					Object[] t = p1.joinAvailable.get(new ActualField(p1.hostID), new FormalField(Boolean.class));
+					if(!isReady) {
+						System.out.println(p1.getName()+ " wasnt ready putting "+t[0]+" "+t[1]);
+						p1.joinAvailable.put(t[0],t[1]);
+					}else
+					if((boolean)t[1] && isReady) {
 						//p1.joinAvailable.get(new FormalField(Boolean.class));
 						//Host loads the gameFrame and waits for the players to connect
+						System.out.println("ReadyStateReceived from player 2");
 						p1.startGame();
 						//This orders the players to connect
-						p1.hostAvailable.put(true);
+						System.out.println("putting hostid="+p1.hostID);
+						p1.hostAvailable.put(p1.hostID,true);
+						break;
 					}
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
@@ -269,9 +295,10 @@ public class LobbyFrame extends javax.swing.JFrame {
 		public void run() {
 			while(true) {
 				try {
-					Object[] t = p2.hostAvailable.get(new FormalField(Boolean.class));
-					if((boolean)t[0]) {
+					Object[] t = p2.hostAvailable.get(new ActualField(p2.hostID),new FormalField(Boolean.class));
+					if((boolean)t[1]) {
 						p2.startGame();
+						break;
 					}
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block

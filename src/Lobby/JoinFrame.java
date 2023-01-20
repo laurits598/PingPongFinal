@@ -49,11 +49,17 @@ public class JoinFrame extends javax.swing.JFrame {
                 Player p2 = new Player(false);
                 p2.setName(nickname);
                 try {
+                	
                 	p2.joinAvailable.put(nickname);
-					Object[] t = p2.hostAvailable.query(new FormalField(String.class));
+					Object[] t = p2.hostAvailable.query(new FormalField(String.class),new FormalField(Integer.class),new FormalField(Integer.class));
 					if(t!=null) {
-						t = p2.hostAvailable.get(new FormalField(String.class));
+						t = p2.hostAvailable.get(new FormalField(String.class),new FormalField(Integer.class),new FormalField(Integer.class));
 						String nameOpponment = (String) t[0];
+						//p2 needs to know the id of the host
+						p2.setHostID((int)t[1]);
+						//This is there own tuples spaces
+						p2.setServerID((int)t[2]);
+						p2.createSpaces((int)t[2]);
 						LobbyFrame.open(p2,nameOpponment);
 					}
 				} catch (InterruptedException e) {

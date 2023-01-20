@@ -3,7 +3,12 @@ package Lobby;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
+import org.jspace.FormalField;
+import org.jspace.RemoteSpace;
+
+import PingPong.Host;
 import PingPong.Player;
 
 /**
@@ -12,11 +17,19 @@ import PingPong.Player;
  */
 public class HostFrame extends javax.swing.JFrame {
 
+	
+	//playerTwoMovement = new RemoteSpace(uriP2);
+
     /**
      * Creates new form HostFrame
      */
     public HostFrame() {
-        initComponents();
+        try {
+			initComponents();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     /**
@@ -26,7 +39,7 @@ public class HostFrame extends javax.swing.JFrame {
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
-    private void initComponents() {
+    private void initComponents() throws IOException{
 
         jPanel1 = new javax.swing.JPanel();
         jTextField1 = new javax.swing.JTextField();
@@ -42,10 +55,15 @@ public class HostFrame extends javax.swing.JFrame {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
                 String nickname = jTextField1.getText();
-                Player p1 = new Player(true);
+                
+                Host p1 = new Host(true);
+                int[] arr = p1.createHost();
+                p1.setHostID(arr[0]);
+                p1.createSpaces(arr[1]);
                 p1.setName(nickname);
+                
             	try {
-					p1.hostAvailable.put(nickname);
+					p1.hostAvailable.put(nickname,arr[0],arr[1]);
 					//LobbyFrame lobby = new LobbyFrame(p1);
 					LobbyFrame.open(p1);
 				} catch (InterruptedException e1) {
